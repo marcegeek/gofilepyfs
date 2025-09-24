@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gofilepyfs"
+dynamic = ["version"]
+description = "A Path-like interface for Gofile"
+readme = "README.md"
+license = "MIT"
+authors = [
+    {name = "Marcelo Castellano", email = "marce.geek22@gmail.com"},
+]
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+    "gofilepy-api @ git+https://github.com/marcegeek/gofilepy.git@mybranch",
+    "pathlib-abc",
+]
+
+[project.urls]
+Homepage = "https://github.com/marcegeek/gofilepyfs"
+
+[tool.setuptools_scm]
