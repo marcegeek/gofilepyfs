@@ -17,8 +17,14 @@ from .exceptions import PathNotAFileError, PathNotFoundError, PathNotADirectoryE
 class GofileFSClient:
     _UPDATE_AFTER = dt.timedelta(seconds=15)
 
-    def __init__(self, token: str) -> None:
-        self.gofile: GofileClient = GofileClient(token=token)
+    def __init__(self, client_or_token: GofileClient | str) -> None:
+        if isinstance(client_or_token, GofileClient):
+            client = client_or_token
+            if client.account is None:
+                client.get_account()
+        else:
+            client = GofileClient(client_or_token)
+        self.gofile: GofileClient = client
         self.account: GofileAccount = self.gofile.account
         self._root_folder: GofileFolder = self.account.root_folder
 
@@ -150,9 +156,9 @@ class GofilePathInfo(PathInfo):
 class GofilePath(ReadablePath):
     parser = posixpath
 
-    def __init__(self, *pathsegments: str | os.PathLike, fs_client: GofileFSClient | None = None):
+    def __init__(self, *pathsegments: str | os.PathLike, client: GofileClient | GofileFSClient | None = None):
         self._segments = pathsegments
-        self.fs_client = fs_client
+        self.fs_client = GofileFSClient(client) if isinstance(client, GofileClient) else client
         self._vfspath = None
         self._root_folder = None
 
@@ -175,7 +181,7 @@ class GofilePath(ReadablePath):
         return self.parser.join(*self._segments)
 
     def with_segments(self, *pathsegments):
-        return type(self)(*pathsegments, fs_client=self.fs_client)
+        return type(self)(*pathsegments, client=self.fs_client)
 
     def __vfspath__(self):
         if self._vfspath is not None:
